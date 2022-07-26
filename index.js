@@ -1,9 +1,12 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const port = normalizaPort(process.env.PORT || '3000');
 const mysql = require('mysql2');
 
 app.use(express.json());
+app.use(cors());
+
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers","Origin, X-Requested-With, Content-Type, Accept");
@@ -11,6 +14,7 @@ app.use((req, res, next) => {
   });
 
 app.get('/', (req, res) => res.json({ message: 'Funcionando!' }));
+
 app.get('/fornecedores', (req, res) => {
     execSQLQuery('SELECT * FROM fornecedores', res);
 });
@@ -38,8 +42,9 @@ app.patch('/fornecedores/:id', (req, res) => {
 })
 
 app.delete('/fornecedores/:id', (req, res) => {
+    console.log(req.params);
     execSQLQuery('DELETE FROM fornecedores WHERE id=' + parseInt(req.params.id), res);
-})
+});
 
 function normalizaPort(val) {
     const port = parseInt(val, 10);
@@ -76,4 +81,4 @@ function execSQLQuery(sqlQry, res){
         connection.end();
         console.log('executou!');
     });
-  }
+}
