@@ -1,12 +1,15 @@
 const e = require('express');
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const port = normalizaPort(process.env.PORT || '3000');
 const mysql = require('mysql2');
 
+app.use(cors())
 app.use(express.json());
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET", "PUT", "POST", "DELETE", "OPTIONS");
     res.header(
       "Access-Control-Allow-Headers",
       "Origin, X-Requested-With, Content-Type, Accept"
@@ -18,17 +21,32 @@ app.get('/', (req, res) => res.json({ message: 'Funcionando!' }));
 app.get('/fornecedores', (req, res) => {
     execSQLQuery('SELECT * FROM fornecedores', res);
 });
+
 //filtra os fornecedores pela cidade
 app.get('/fornecedores/:cidade?', (req, res) => {
     let filter = '';
     if (req.params.cidade) filter = ` WHERE cidade = '${req.params.cidade}'`;
     execSQLQuery('SELECT * FROM fornecedores' + filter, res);
 });
+
 app.post('/fornecedores', (req, res) => {
     const nome = req.body.nome;
     const cidade = req.body.cidade;
-    execSQLQuery(`INSERT INTO fornecedores(nome, cidade) VALUES('${nome}', '${cidade}')`, res);
+    const cep = req.body.cep;
+    execSQLQuery(`INSERT INTO fornecedores(nome, cidade) VALUES('${nome}', '${cidade}', '${cep}')`, res);
 });
+
+app.pacth('/fornecedores/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    const nome = req.body.nome;
+    const cidade = req.body.cidade;
+    const cep = req.body.cep;
+    execSQLQuery(`UPDATE fornecedores SET nome='${nome}', cidade='${cidade}', cep='${cep}' WHERE id=${id}`, res);
+})
+
+app.delete('/fornecedores/:id', (req, res) => {
+    execSQLQuery('DELETE FROM fornecedores WHERE id=' + parseInt(req.params.id), res);
+})
 
 function normalizaPort(val) {
     const port = parseInt(val, 10);
