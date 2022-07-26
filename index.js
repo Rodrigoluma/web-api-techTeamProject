@@ -1,19 +1,13 @@
-const e = require('express');
 const express = require('express');
-const cors = require('cors');
 const app = express();
 const port = normalizaPort(process.env.PORT || '3000');
 const mysql = require('mysql2');
 
-app.use(cors())
 app.use(express.json());
 app.use((req, res, next) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "GET", "PUT", "POST", "DELETE", "OPTIONS");
-    res.header(
-      "Access-Control-Allow-Headers",
-      "Origin, X-Requested-With, Content-Type, Accept"
-    );
+    res.header("Access-Control-Allow-Headers","Origin, X-Requested-With, Content-Type, Accept");
     next();
   });
 
