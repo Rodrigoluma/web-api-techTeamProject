@@ -13,5 +13,13 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MarioCesarCF/web-api.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MarioCesarCF/web-api/issues"
+  },
+  "homepage": "https://github.com/MarioCesarCF/web-api#readme",
   "description": ""
 }
