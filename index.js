@@ -5,8 +5,7 @@ const mysql = require('mysql2');
 
 app.use(express.json());
 app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Methods", "GET", "PUT", "POST", "DELETE", "OPTIONS");
+    res.header("Access-Control-Allow-Origin", "https://mariocesarcf.github.io/formulario-cadastro/");
     res.header("Access-Control-Allow-Headers","Origin, X-Requested-With, Content-Type, Accept");
     next();
   });
@@ -30,7 +29,7 @@ app.post('/fornecedores', (req, res) => {
     execSQLQuery(`INSERT INTO fornecedores(nome, cidade) VALUES('${nome}', '${cidade}', '${cep}')`, res);
 });
 
-app.pacth('/fornecedores/:id', (req, res) => {
+app.patch('/fornecedores/:id', (req, res) => {
     const id = parseInt(req.params.id);
     const nome = req.body.nome;
     const cidade = req.body.cidade;
