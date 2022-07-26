@@ -43,10 +43,10 @@ app.listen(port, function () {
 
 function execSQLQuery(sqlQry, res){
     const connection = mysql.createConnection({
-        host     : 'localhost',
-        user     : 'root',
-        password : 'Hpdj692c$',
-        database : 'form'
+        host     : 'us-cdbr-east-06.cleardb.net',
+        user     : 'b15e8849916ff3',
+        password : '21b571b8',
+        database : 'heroku_60eb452e3f44a0e'
     });
    
     connection.query(sqlQry, (error, results, fields) => {
