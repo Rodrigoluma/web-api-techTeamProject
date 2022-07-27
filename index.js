@@ -65,10 +65,10 @@ app.listen(port, function () {
 
 function execSQLQuery(sqlQry, res){
     const connection = mysql.createConnection({
-        host     : HOST,
-        user     : USER,
-        password : PASSWORD,
-        database : DATABASE
+        host     : process.env.HOST,
+        user     : process.env.USER,
+        password : process.env.PASSWORD,
+        database : process.env.DATABASE
     });
    
     connection.query(sqlQry, (error, results, fields) => {
