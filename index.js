@@ -27,17 +27,14 @@ app.get('/fornecedores/:cidade?', (req, res) => {
 });
 
 app.post('/fornecedores', (req, res) => {
-    const nome = req.body.nome;
-    const cidade = req.body.cidade;
-    const cep = req.body.cep;
+    const { nome, cidade, cep } = req.body;    
     execSQLQuery(`INSERT INTO fornecedores(nome, cidade, cep) VALUES('${nome}', '${cidade}', '${cep}')`, res);
 });
 
 app.patch('/fornecedores/:id', (req, res) => {
     const id = parseInt(req.params.id);
-    const nome = req.body.nome;
-    const cidade = req.body.cidade;
-    const cep = req.body.cep;
+    const { nome, cidade, cep } = req.body;
+    
     execSQLQuery(`UPDATE fornecedores SET nome='${nome}', cidade='${cidade}', cep='${cep}' WHERE id=${id}`, res);
 })
 
