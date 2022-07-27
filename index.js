@@ -15,33 +15,33 @@ app.use((req, res, next) => {
 
 app.get('/', (req, res) => res.json({ message: 'Funcionando!' }));
 
-app.get('/fornecedores', (req, res) => {
-    execSQLQuery('SELECT * FROM fornecedores', res);
+app.get('/doador', (req, res) => {
+    execSQLQuery('SELECT * FROM doador', res);
 });
 
 //filtra os fornecedores pela cidade
-app.get('/fornecedores/:cidade?', (req, res) => {
-    let filter = '';
-    if (req.params.cidade) filter = ` WHERE cidade = '${req.params.cidade}'`;
-    execSQLQuery('SELECT * FROM fornecedores' + filter, res);
+
+app.get('/doador/:id?', (req, res) => {
+    let { id_pontocoleta } = req.params.id;
+    execSQLQuery('SELECT * FROM doador WHERE id_pontocoleta = ?', [id_pontocoleta]);
 });
 
-app.post('/fornecedores', (req, res) => {
-    const { nome, cidade, cep } = req.body;    
-    execSQLQuery(`INSERT INTO fornecedores(nome, cidade, cep) VALUES('${nome}', '${cidade}', '${cep}')`, res);
+app.post('/doador', (req, res) => {
+    const { nome, telefone, area } = req.body;    
+    execSQLQuery(`INSERT INTO doador(nome, telefone, areaAtuacao) VALUES(?,?,?)`, [nome, Number(telefone), area]);
 });
 
-app.patch('/fornecedores/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    const { nome, cidade, cep } = req.body;
+// app.patch('/fornecedores/:id', (req, res) => {
+//     const id = parseInt(req.params.id);
+//     const { nome, cidade, cep } = req.body;
     
-    execSQLQuery(`UPDATE fornecedores SET nome='${nome}', cidade='${cidade}', cep='${cep}' WHERE id=${id}`, res);
-})
+//     execSQLQuery(`UPDATE fornecedores SET nome='${nome}', cidade='${cidade}', cep='${cep}' WHERE id=${id}`, res);
+// })
 
-app.delete('/fornecedores/:id', (req, res) => {
-    console.log(req.params);
-    execSQLQuery('DELETE FROM fornecedores WHERE id=' + parseInt(req.params.id), res);
-});
+// app.delete('/fornecedores/:id', (req, res) => {
+//     console.log(req.params);
+//     execSQLQuery('DELETE FROM fornecedores WHERE id=' + parseInt(req.params.id), res);
+// });
 
 function normalizaPort(val) {
     const port = parseInt(val, 10);
