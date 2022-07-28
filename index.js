@@ -48,6 +48,12 @@ app.post('/user', (req, res) => {
     execSQLQuery(`INSERT INTO user(nome, cpfCnpj, telefone, areaAtuacao, email, senha, coletor_doador) VALUES('${nome}', '${cpfCnpj}', '${telefone}','${areaAtuacao}', '${email}', '${senha}', '${coletor_doador}')`, res);
 });
 
+app.post('/pontocoleta', (req, res) => {
+    const {nome, data, hora, quantidade, cep, logradouro, numero, bairro, cidade, estado} = req.body;
+    //talvez vai da pra tirar o WHERE
+    execSQLQuery(`INSERT INTO pontocoleta(nome, data, hora, quantidade, cep, logradouro, numero, bairro, cidade, estado) VALUES('${nome}', '${data}', '${hora}','${quantidade}', '${cep}', '${logradouro}', '${numero}', '${bairro}', '${cidade}', '${estado}')`, res);
+});
+
 app.post('/pontocoleta/:id', (req, res) => {
     const {id_coletor} = req.params;
     const {id_coletor_coleta} = req.body;
