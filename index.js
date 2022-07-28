@@ -5,8 +5,6 @@ const app = express();
 const port = normalizaPort(process.env.PORT || '3000');
 const mysql = require('mysql2');
 
-
-
 app.use(express.json());
 app.use(cors());
 
@@ -18,23 +16,50 @@ app.use((req, res, next) => {
 
 app.get('/', (req, res) => res.json({ message: 'Funcionando!' }));
 
-app.get('/doador', (req, res) => {
-    execSQLQuery('SELECT * FROM doador', res);
+// metodos para o projeto
+// deixei editar/deletar de fora:
+
+// (get) conferência dos dados armazenados em cookie através de filtro na tabela user (login/senha)  ---- Não entendi
+// (post) cadastro de usuários (só dados do html) ------ Quais são os dados
+// (get) filtro se já existe o cpf cadastrado pra não gerar dois cadastros --- FEITO Retorna todos os dados user com o cpf cadastrado, no JS da pra filtrar o que mostrar
+// (post) cadastro de endereço(dados do html e ID de quem estiver cadastrado) --- Somente de pontos de coleta né?
+// (get) pág parceiros (abre todos os endereços já cadastrados) ---- FEITO Retorna todas as informações, no JS da pra filtrar o que mostrar
+// (get) filtra esses endereços e retorna a cidade escolhida ---- FEITO Retorna todas as informações dos pontos que tem a cidade escolhida, no JS da pra filtrar o que mostrar
+// (post) cadastra id do coletor na tabela pontodecoleta que ele escolher ---- Esse id não é auto incrementado. Como vamos gerar ele? Tentei pegar os dois id e trocar um pelo outro.
+// (get) retorna no cadastro do doador/coletor dados dele e lista de endereços ligados ao seu ID ---- Retorna todas as informações do user, no JS da pra filtrar o que mostrar. Não sei como pegar os dados do endereço ligados ao id dele. Já que o endereço está no ponto de coleta.
+
+app.get('/user/:cpfCnpj', (req, res) => {    
+    const {cpfCnpj} = req.params;
+    execSQLQuery(`SELECT * FROM user WHERE cpfCnpj = '${cpfCnpj}'`, res);
 });
 
-app.get('/doador/:areaAtuacao?', (req, res) => {    
-    const {areaAtuacao} = req.params;
-    console.log(areaAtuacao);
-    let filter = '';
-    if (areaAtuacao) filter = ` WHERE areaAtuacao = '${areaAtuacao}'`;
-    execSQLQuery('SELECT * FROM doador' + filter, res);
+app.get('/pontocoleta', (req, res) => {
+    execSQLQuery('SELECT * FROM pontocoleta', res);
 });
 
-app.post('/doador', (req, res) => {
-    const {nome, areaAtuacao} = req.body;
-    execSQLQuery(`INSERT INTO doador(nome, areaAtuacao) VALUES('${nome}', '${areaAtuacao}')`, res);
+app.get('/pontocoleta/:cidade', (req, res) => {    
+    const {cidade} = req.params;
+    execSQLQuery(`SELECT * FROM pontocoleta WHERE cidade = '${cidade}'`, res);
 });
 
+app.post('/pontocoleta/:id', (req, res) => {
+    const {id_coletor} = req.params;
+    const {id_coletor_coleta} = req.body;
+    //talvez vai da pra tirar o WHERE
+    execSQLQuery(`UPDATE pontocoleta SET id_coletorcoleta = ${id_coletor} WHERE id_coletorcoleta = ${id_coletor_coleta};`, res);
+});
+
+app.get('/user', (req, res) => {  
+    execSQLQuery(`SELECT * FROM user`, res);
+});
+
+
+
+// Exemplos a serem apagados
+// app.post('/pontocoleta/:id', (req, res) => {
+//     const {id_coletor} = req.params;
+//     execSQLQuery(`INSERT INTO doador(nome, areaAtuacao) VALUES('${nome}', '${areaAtuacao}')`, res);
+// });
 // app.get('/doador', (req, res) => {
 //     connection.query('SELECT * FROM doador', function(err, results, fields) {
 //         console.log(results); // results contains rows returned by server
