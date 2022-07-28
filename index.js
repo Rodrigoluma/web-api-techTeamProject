@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const port = normalizaPort(process.env.PORT || '3000');
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 
 app.use(express.json());
 app.use(cors());
@@ -33,73 +33,49 @@ app.get('/user/:cpfCnpj', (req, res) => {
     execSQLQuery(`SELECT * FROM user WHERE cpfCnpj = '${cpfCnpj}'`, res);
 });
 
-app.get('/pontocoleta', (req, res) => {
-    execSQLQuery('SELECT * FROM pontocoleta', res);
+app.get('/pontocoleta', async (req, res) => {
+    const result = await execSQLQuery('SELECT * FROM pontocoleta');
+    return res.json(result);
 });
 
-app.get('/pontocoleta/:cidade', (req, res) => {    
+app.get('/pontocoleta/:cidade', async (req, res) => {    
     const {cidade} = req.params;
-    execSQLQuery(`SELECT * FROM pontocoleta WHERE cidade = '${cidade}'`, res);
+
+    const result = await execSQLQuery('SELECT * FROM `pontocoleta` WHERE `cidade` = ?', [cidade]);
+
+    return res.json(result);
 });
 
-app.post('/user', (req, res) => {
-    const { nome, cpfCnpj, telefone, areaAtuacao, email, senha, coletor_doador } = req.body;    
-    execSQLQuery(`INSERT INTO user(nome, cpfCnpj, telefone, areaAtuacao, email, senha, coletor_doador) VALUES('${nome}', '${cpfCnpj}', '${telefone}','${areaAtuacao}', '${email}', '${senha}', '${coletor_doador}')`, res);
+app.post('/user', async (req, res) => {
+    const { nome, cpfCnpj, telefone, areaAtuacao, email, senha, coletor_doador } = req.body;  
+
+    const result = await execSQLQuery(`INSERT INTO user(nome, cpfCnpj, telefone, areaAtuacao, email, senha, coletor_doador) VALUES('${nome}', '${cpfCnpj}', '${telefone}','${areaAtuacao}', '${email}', '${senha}', '${coletor_doador}')`, res);
+
+    return res.json(result);
 });
 
-app.post('/pontocoleta', (req, res) => {
+app.post('/pontocoleta', async (req, res) => {
     const { nome, logradouro, numero, bairro, cep, cidade, estado, data_coleta, quantidade } = req.body;    
-    execSQLQuery(`INSERT INTO pontocoleta(nome, logradouro, numero, bairro, cep, cidade, estado, data_coleta, quantidade) VALUES('${nome}','${logradouro}', '${numero}', '${bairro}', '${cep}', '${cidade}', '${estado}', '${data_coleta}', '${quantidade}')`, res);
+
+    const result = await execSQLQuery(`INSERT INTO pontocoleta(nome, logradouro, numero, bairro, cep, cidade, estado, data_coleta, quantidade) VALUES('${nome}','${logradouro}', '${numero}', '${bairro}', '${cep}', '${cidade}', '${estado}', '${data_coleta}', '${quantidade}')`, res);
+
+    return res.json(result);
 });
 
-app.post('/pontocoleta/:id', (req, res) => {
+app.post('/pontocoleta/:id', async (req, res) => {
     const {id_coletor} = req.params;
-    const {id_coletor_coleta} = req.body;   
-    execSQLQuery(`UPDATE pontocoleta SET id_coletorcoleta = ${id_coletor} WHERE id_coletorcoleta = ${id_coletor_coleta};`, res);
+    const {id_coletor_coleta} = req.body; 
+
+    const result = await execSQLQuery(`UPDATE pontocoleta SET id_coletorcoleta = ${id_coletor} WHERE id_coletorcoleta = ${id_coletor_coleta};`, res);
+
+    return res.json(result);
 });
 
-app.get('/user', (req, res) => {  
-    execSQLQuery(`SELECT * FROM user`, res);
+app.get('/user', async (req, res) => {  
+    const result = await execSQLQuery(`SELECT * FROM user`, res);
+
+    return res.json(result);
 });
-
-
-
-// Exemplos a serem apagados
-// app.post('/pontocoleta/:id', (req, res) => {
-//     const {id_coletor} = req.params;
-//     execSQLQuery(`INSERT INTO doador(nome, areaAtuacao) VALUES('${nome}', '${areaAtuacao}')`, res);
-// });
-// app.get('/doador', (req, res) => {
-//     connection.query('SELECT * FROM doador', function(err, results, fields) {
-//         console.log(results); // results contains rows returned by server
-//         console.log(fields); // fields contains extra meta data about results, if available
-//     });
-//     return res;
-// });
-
-// //filtra os fornecedores pela cidade
-
-// app.get('/doador/:id', async (req, res) => {
-//     let { id_pontocoleta } = req.params.id;
-//     await execSQLQuery('SELECT * FROM doador WHERE id_pontocoleta = ?', [id_pontocoleta]);
-// });
-
-// app.post('/doador', async (req, res) => {
-//     const { nome, telefone, area } = req.body;    
-//     await execSQLQuery(`INSERT INTO doador(nome, telefone, areaAtuacao) VALUES(?,?,?)`, [nome, Number(telefone), area]);
-// });
-
-// app.patch('/fornecedores/:id', (req, res) => {
-//     const id = parseInt(req.params.id);
-//     const { nome, cidade, cep } = req.body;
-    
-//     execSQLQuery(`UPDATE fornecedores SET nome='${nome}', cidade='${cidade}', cep='${cep}' WHERE id=${id}`, res);
-// })
-
-// app.delete('/fornecedores/:id', (req, res) => {
-//     console.log(req.params);
-//     execSQLQuery('DELETE FROM fornecedores WHERE id=' + parseInt(req.params.id), res);
-// });
 
 function normalizaPort(val) {
     const port = parseInt(val, 10);
@@ -118,23 +94,21 @@ app.listen(port, function () {
     console.log(`app listening on port ${port}`)
 })
 
-async function execSQLQuery(querySql, response){ 
+async function execSQLQuery(querySql, values){ 
     if(querySql === undefined){
         return
     }  
-    const connection = mysql.createConnection({
+    const connection = await mysql.createConnection({
         host     : process.env.HOST,
         user     : process.env.USER,
         password : process.env.PASSWORD,
         database : process.env.DATABASE
     });
-   console.log(querySql);
-    connection.query(querySql, (error, results, fields) => {
-        if(error) 
-          response.json(error);
-        else
-          response.json(results);
-        connection.end();
-        console.log('executou!');
-    });    
+    
+    const result = await connection.query(querySql, values, function(err, results, fields) {
+        console.log("results", results); 
+        console.log(fields); 
+      });  
+    
+    return result[0];
 }
