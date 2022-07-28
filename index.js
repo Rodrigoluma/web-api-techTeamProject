@@ -43,21 +43,18 @@ app.get('/pontocoleta/:cidade', (req, res) => {
 });
 
 app.post('/user', (req, res) => {
-    const {nome, cpfCnpj, telefone, areaAtuacao, email, senha, coletor_doador} = req.body;
-    //talvez vai da pra tirar o WHERE
+    const { nome, cpfCnpj, telefone, areaAtuacao, email, senha, coletor_doador } = req.body;    
     execSQLQuery(`INSERT INTO user(nome, cpfCnpj, telefone, areaAtuacao, email, senha, coletor_doador) VALUES('${nome}', '${cpfCnpj}', '${telefone}','${areaAtuacao}', '${email}', '${senha}', '${coletor_doador}')`, res);
 });
 
 app.post('/pontocoleta', (req, res) => {
-    const {nome, data, hora, quantidade, cep, logradouro, numero, bairro, cidade, estado} = req.body;
-    //talvez vai da pra tirar o WHERE
-    execSQLQuery(`INSERT INTO pontocoleta(nome, data, hora, quantidade, cep, logradouro, numero, bairro, cidade, estado) VALUES('${nome}', '${data}', '${hora}','${quantidade}', '${cep}', '${logradouro}', '${numero}', '${bairro}', '${cidade}', '${estado}')`, res);
+    const { nome, logradouro, numero, bairro, cep, cidade, estado, data_coleta, quantidade } = req.body;    
+    execSQLQuery(`INSERT INTO pontocoleta(nome, logradouro, numero, bairro, cep, cidade, estado, data_coleta, quantidade) VALUES('${nome}','${logradouro}', '${numero}', '${bairro}', '${cep}', '${cidade}', '${estado}', '${data_coleta}', '${quantidade}')`, res);
 });
 
 app.post('/pontocoleta/:id', (req, res) => {
     const {id_coletor} = req.params;
-    const {id_coletor_coleta} = req.body;
-    //talvez vai da pra tirar o WHERE
+    const {id_coletor_coleta} = req.body;   
     execSQLQuery(`UPDATE pontocoleta SET id_coletorcoleta = ${id_coletor} WHERE id_coletorcoleta = ${id_coletor_coleta};`, res);
 });
 
@@ -121,8 +118,6 @@ app.listen(port, function () {
     console.log(`app listening on port ${port}`)
 })
 
-
-
 async function execSQLQuery(querySql, response){ 
     if(querySql === undefined){
         return
@@ -141,12 +136,5 @@ async function execSQLQuery(querySql, response){
           response.json(results);
         connection.end();
         console.log('executou!');
-    });
-    // if(global.connection && global.connection.state !== 'disconnected')
-    //     return global.connection;
- 
-    
-    // console.log("Conectou no MySQL!");
-    // global.connection = connection;
-    // return connection;
+    });    
 }
