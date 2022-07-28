@@ -4,13 +4,14 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
-    "mysql2": "^2.3.3"
+    "mysql2": "^2.3.3",
+    "mysql2-promise": "^0.1.4"
   },
   "name": "webapi",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node ./index.js",
+    "start": "nodemon ./index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -24,5 +25,8 @@
     "url": "https://github.com/MarioCesarCF/web-api/issues"
   },
   "homepage": "https://github.com/MarioCesarCF/web-api#readme",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^2.0.19"
+  }
 }
