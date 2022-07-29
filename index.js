@@ -18,8 +18,7 @@ app.use((req, res, next) => {
 app.get('/', (req, res) => res.json({ message: 'Funcionando!' }));
 
 app.get('/user/:email', async (req, res) => {    
-    const {email} = req.params;
-    
+    const {email} = req.params;    
     const result = await execSQLQuery(`SELECT * FROM user WHERE email = ?`, [email]);
     return res.json(result);
 });
@@ -39,15 +38,12 @@ app.get('/pontocoleta/:cidade', async (req, res) => {
     const {cidade} = req.params;
     console.log(cidade)
     const result = await execSQLQuery('SELECT * FROM `pontocoleta` WHERE `cidade` = ?', [cidade]);
-
     return res.json(result);
 });
 
 app.post('/user', async (req, res) => {
     const { nome, cpfCnpj, telefone, areaAtuacao, email, senha, coletor_doador } = req.body;  
-
     const result = await execSQLQuery(`INSERT INTO user(nome, cpfCnpj, telefone, areaAtuacao, email, senha, coletor_doador) VALUES(?, ?, ?, ?, ?, ?, ?)`, [ nome, cpfCnpj, telefone, areaAtuacao, email, senha, coletor_doador ]);
-
     return res.json(result);
 });
 
@@ -55,21 +51,6 @@ app.post('/pontocoleta', async (req, res) => {
     const { nome, telefone, logradouro, numero, bairro, cep, cidade, estado, data_coleta, quantidade } = req.body;    
 
     const result = await execSQLQuery(`INSERT INTO pontocoleta(nome, telefone, logradouro, numero, bairro, cep, cidade, estado, data_coleta, quantidade) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [ nome, telefone, logradouro, numero, bairro, cep, cidade, estado, data_coleta, quantidade ]);
-
-    return res.json(result);
-});
-
-app.post('/pontocoleta/:id', async (req, res) => {
-    const {id_coletor} = req.params;
-    const {id_coletor_coleta} = req.body; 
-
-    const result = await execSQLQuery(`UPDATE pontocoleta SET id_coletorcoleta = ? WHERE id_coletorcoleta = ?;`, [id_coletor, id_coletor_coleta]);
-
-    return res.json(result);
-});
-
-app.get('/user', async (req, res) => {  
-    const result = await execSQLQuery(`SELECT * FROM user`);
 
     return res.json(result);
 });
@@ -98,14 +79,10 @@ async function execSQLQuery(querySql, values){
         return
     }  
     const connection = await mysql.createConnection({
-        host : 'y6aj3qju8efqj0w1.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
-user: 'bbx5rag83vq1wazn',
-password: 't5p4xl9w3z82j509',
-database: 'ytek8o3oiapv8ysq'
-        // host     : process.env.HOST,
-        // user     : process.env.USER,
-        // password : process.env.PASSWORD,
-        // database : process.env.DATABASE
+        host: process.env.HOST,
+        user: process.env.USER,
+        password: process.env.PASSWORD,
+        database: process.env.DATABASE
     });
     
     const result = await connection.query(querySql, values, function(err, results, fields) {
