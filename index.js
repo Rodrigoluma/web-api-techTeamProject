@@ -17,9 +17,14 @@ app.use((req, res, next) => {
 
 app.get('/', (req, res) => res.json({ message: 'Funcionando!' }));
 
-app.get('/user/:cpfCnpj', (req, res) => {    
-    const {cpfCnpj} = req.params;
-    execSQLQuery(`SELECT * FROM user WHERE cpfCnpj = ?`, [cpfCnpj]);
+app.get('/user/:email', (req, res) => {    
+    const {email} = req.params;
+    execSQLQuery(`SELECT * FROM user WHERE email = ?`, [email]);
+});
+
+app.get('/user/:senha', (req, res) => {    
+    const {senha} = req.params;
+    execSQLQuery(`SELECT * FROM user WHERE senha = ?`, [senha]);
 });
 
 app.get('/pontocoleta', async (req, res) => {
