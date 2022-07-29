@@ -30,7 +30,7 @@ app.get('/', (req, res) => res.json({ message: 'Funcionando!' }));
 
 app.get('/user/:cpfCnpj', (req, res) => {    
     const {cpfCnpj} = req.params;
-    execSQLQuery(`SELECT * FROM user WHERE cpfCnpj = '${cpfCnpj}'`, res);
+    execSQLQuery(`SELECT * FROM user WHERE cpfCnpj = ?`, [cpfCnpj]);
 });
 
 app.get('/pontocoleta', async (req, res) => {
@@ -49,15 +49,15 @@ app.get('/pontocoleta/:cidade', async (req, res) => {
 app.post('/user', async (req, res) => {
     const { nome, cpfCnpj, telefone, areaAtuacao, email, senha, coletor_doador } = req.body;  
 
-    const result = await execSQLQuery(`INSERT INTO user(nome, cpfCnpj, telefone, areaAtuacao, email, senha, coletor_doador) VALUES('${nome}', '${cpfCnpj}', '${telefone}','${areaAtuacao}', '${email}', '${senha}', '${coletor_doador}')`, res);
+    const result = await execSQLQuery(`INSERT INTO user(nome, cpfCnpj, telefone, areaAtuacao, email, senha, coletor_doador) VALUES(?, ?, ?, ?, ?, ?, ?)`, [ nome, cpfCnpj, telefone, areaAtuacao, email, senha, coletor_doador ]);
 
     return res.json(result);
 });
 
 app.post('/pontocoleta', async (req, res) => {
-    const { nome, logradouro, numero, bairro, cep, cidade, estado, data_coleta, quantidade } = req.body;    
+    const { nome, telefone, logradouro, numero, bairro, cep, cidade, estado, data_coleta, quantidade } = req.body;    
 
-    const result = await execSQLQuery(`INSERT INTO pontocoleta(nome, logradouro, numero, bairro, cep, cidade, estado, data_coleta, quantidade) VALUES('${nome}','${logradouro}', '${numero}', '${bairro}', '${cep}', '${cidade}', '${estado}', '${data_coleta}', '${quantidade}')`, res);
+    const result = await execSQLQuery(`INSERT INTO pontocoleta(nome, logradouro, numero, bairro, cep, cidade, estado, data_coleta, quantidade) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [ nome, telefone, logradouro, numero, bairro, cep, cidade, estado, data_coleta, quantidade ]);
 
     return res.json(result);
 });
@@ -66,13 +66,13 @@ app.post('/pontocoleta/:id', async (req, res) => {
     const {id_coletor} = req.params;
     const {id_coletor_coleta} = req.body; 
 
-    const result = await execSQLQuery(`UPDATE pontocoleta SET id_coletorcoleta = ${id_coletor} WHERE id_coletorcoleta = ${id_coletor_coleta};`, res);
+    const result = await execSQLQuery(`UPDATE pontocoleta SET id_coletorcoleta = ? WHERE id_coletorcoleta = ?;`, [id_coletor, id_coletor_coleta]);
 
     return res.json(result);
 });
 
 app.get('/user', async (req, res) => {  
-    const result = await execSQLQuery(`SELECT * FROM user`, res);
+    const result = await execSQLQuery(`SELECT * FROM user`);
 
     return res.json(result);
 });
